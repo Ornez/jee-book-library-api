@@ -36,6 +36,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Book getRawBook(Integer id) {
+        return bookRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
     public BookDto getBook(Integer bookId) {
         if (!bookExists(bookId)){
             return null;

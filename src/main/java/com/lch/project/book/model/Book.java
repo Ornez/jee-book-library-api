@@ -1,11 +1,14 @@
 package com.lch.project.book.model;
 
 import com.lch.project.author.model.Author;
+import com.lch.project.rating.model.UserRating;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -25,4 +28,6 @@ public class Book {
     @ManyToOne(cascade = CascadeType.ALL)
     private Author author;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<UserRating> userRatings;
 }

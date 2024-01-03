@@ -1,9 +1,18 @@
 package com.lch.project.rating.service;
 
-import com.lch.project.authorization.service.UserServiceImpl;
-import com.lch.project.rating.dtos.RatingDto;
+import com.lch.project.authorization.model.UserDao;
+import com.lch.project.authorization.service.UserService;
+import com.lch.project.book.model.Book;
+import com.lch.project.book.service.BookService;
+import com.lch.project.rating.dtos.AddRatingDto;
+import com.lch.project.rating.dtos.FilterRatingDto;
+import com.lch.project.rating.dtos.UpdateRatingDto;
+import com.lch.project.rating.model.UserRating;
 import com.lch.project.rating.repository.RatingRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,42 +20,78 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class RatingServiceImpl implements RatingService {
+    private final RatingRepository ratingRepository;
 
-    final private RatingRepository ratingRepository;
-    final private UserServiceImpl userService;
+    @Lazy
+    @Autowired
+    private final BookService bookService;
+
+    @Lazy
+    @Autowired
+    private final UserService userService;
 
     @Override
-    public boolean exists(Integer userId, Integer bookId) {
-        return false;
+    public void addRating(AddRatingDto addRatingDto) {
+        UserRating userRating = new UserRating();
+
+        Book book = bookService.getRawBook(addRatingDto.getBookId());
+        UserDao user = userService.findByUsername(addRatingDto.getUsername());
+
+        userRating.setRating(addRatingDto.getRating());
+        userRating.setUser(user);
+        userRating.setBook(book);
+
+        ratingRepository.save(userRating);
     }
 
     @Override
-    public void create(RatingDto ratingDto) {
-
+    public boolean exists(Integer id) {
+        return ratingRepository.existsById(id);
     }
 
     @Override
-    public RatingDto get(Integer userId, Integer bookId) {
-        return null;
+    public List<UserRating> findAll(FilterRatingDto filterRatingDto) {
+        if (filterRatingDto.getUsername() != null && filterRatingDto.getBookId() != null) {
+            Book book = bookService.getRawBook(filterRatingDto.getBookId());
+            UserDao user = userService.findByUsername(filterRatingDto.getUsername());
+
+            return ratingRepository.findAllByBookAndUser(book, user);
+        }
+        else if (filterRatingDto.getUsername() != null) {
+            UserDao user = userService.findByUsername(filterRatingDto.getUsername());
+            return ratingRepository.findAllByUser(user);
+        }
+        else if (filterRatingDto.getBookId() != null) {
+            Book book = bookService.getRawBook(filterRatingDto.getBookId());
+            return ratingRepository.findAllByBook(book);
+        }
+
+        return ratingRepository.findAll();
     }
 
     @Override
-    public List<RatingDto> getAllByUser(Integer userId) {
-        return null;
+    public boolean update(Integer id, UpdateRatingDto updateRatingDto) {
+        if (!exists(id))
+            return false;
+
+        UserRating userRating = ratingRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        userRating.setRating(updateRatingDto.getRating());
+
+        ratingRepository.save(userRating);
+        return true;
     }
 
     @Override
-    public List<RatingDto> getAllByBook(Integer bookId) {
-        return null;
-    }
+    public boolean delete(Integer id) {
+        if (!exists(id))
+            return false;
 
-    @Override
-    public boolean update(RatingDto ratingDto) {
-        return false;
-    }
+        UserRating userRating = ratingRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-    @Override
-    public boolean delete(RatingDto ratingDto) {
-        return false;
+        userRating.setBook(null);
+        userRating.setUser(null);
+        ratingRepository.save(userRating);
+        ratingRepository.deleteById(id);
+        return true;
     }
 }

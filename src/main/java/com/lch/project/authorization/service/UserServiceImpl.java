@@ -18,6 +18,15 @@ public class UserServiceImpl implements UserService {
     private JwtTokenUtil jwtTokenUtil;
 
     @Override
+    public UserDao findByUsername(String username) {
+        UserDao user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        return user;
+    }
+
+    @Override
     public UserDto getCurrentUser(String token) {
         String username = jwtTokenUtil.getUsernameFromToken(token);
 

@@ -21,10 +21,10 @@ public class UserRating {
     private Integer rating;
 
     @JoinColumn(name = "book_id")
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Book book;
 
     @JoinColumn(name = "user_id")
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     private UserDao user;
 }

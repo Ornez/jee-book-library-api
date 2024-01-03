@@ -1,15 +1,20 @@
 package com.lch.project.rating.service;
 
+import com.lch.project.authorization.model.UserDao;
+import com.lch.project.book.model.Book;
+import com.lch.project.rating.dtos.AddRatingDto;
+import com.lch.project.rating.dtos.FilterRatingDto;
 import com.lch.project.rating.dtos.RatingDto;
+import com.lch.project.rating.dtos.UpdateRatingDto;
+import com.lch.project.rating.model.UserRating;
 
 import java.util.List;
 
 public interface RatingService {
-    boolean exists(Integer userId, Integer bookId);
-    void create(RatingDto ratingDto);
-    RatingDto get(Integer userId, Integer bookId);
-    List<RatingDto> getAllByUser(Integer userId);
-    List<RatingDto> getAllByBook(Integer bookId);
-    boolean update(RatingDto ratingDto);
-    boolean delete(RatingDto ratingDto);
+
+    void addRating(AddRatingDto addRatingDto);
+    boolean exists(Integer id);
+    List<UserRating> findAll(FilterRatingDto filterRatingDto);
+    boolean update(Integer id, UpdateRatingDto updateRatingDto);
+    boolean delete(Integer id);
 }

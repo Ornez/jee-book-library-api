@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface BookService {
     boolean bookExists(Integer bookId);
+    Book getRawBook(Integer id);
     BookDto getBook(Integer bookId);
     List<BookDto> getBooks();
     List<Book> getBooksWithAuthor(Author author);
