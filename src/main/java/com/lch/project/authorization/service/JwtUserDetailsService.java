@@ -30,7 +30,14 @@ public class JwtUserDetailsService implements UserDetailsService {
         }
 
         // You can customize the authorities based on your application's logic
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities;
+
+        if (user.getUsername().equals("admin")) {
+            authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+        else {
+            authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        }
 
         return new User(user.getUsername(), user.getPassword(), authorities);
     }
@@ -58,4 +65,5 @@ public class JwtUserDetailsService implements UserDetailsService {
         // Return the UserDetails
         return new User(newUser.getUsername(), newUser.getPassword(), new ArrayList<>());
     }
+
 }

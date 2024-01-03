@@ -1,7 +1,6 @@
-package com.lch.project.book.repository;
+package com.lch.project.author.repository;
 
-import com.lch.project.book.model.Author;
-import com.lch.project.book.model.Book;
+import com.lch.project.author.model.Author;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
-package com.lch.project.book.controller;
+package com.lch.project.author.controller;
 
-import com.lch.project.book.dtos.AuthorDto;
-import com.lch.project.book.service.AuthorServiceImpl;
+import com.lch.project.author.dtos.AuthorDto;
+import com.lch.project.author.service.AuthorServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,12 +13,12 @@ import java.util.List;
 public class AuthorController {
     private final AuthorServiceImpl authorService;
 
-    @GetMapping(value = "/author/{id}")
+    @GetMapping(value = "/get-author/{id}")
     public AuthorDto getAuthor(@PathVariable("id") Integer authorId) {
         return authorService.getAuthor(authorId);
     }
 
-    @GetMapping(value = "/authors")
+    @GetMapping(value = "/get-authors")
     public List<AuthorDto> getAuthors() {
         return authorService.getAuthors();
     }

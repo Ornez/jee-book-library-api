@@ -1,8 +1,11 @@
 package com.lch.project.book.service;
 
-import com.lch.project.book.dtos.AuthorDto;
+import com.lch.project.author.service.AuthorService;
+import com.lch.project.author.dtos.AuthorDto;
+import com.lch.project.book.dtos.AddBookDto;
 import com.lch.project.book.dtos.BookDto;
-import com.lch.project.book.model.Author;
+import com.lch.project.author.model.Author;
+import com.lch.project.book.dtos.UpdateBookDto;
 import com.lch.project.book.model.Book;
 import com.lch.project.book.converters.BookMapper;
 import com.lch.project.book.repository.BookRepository;
@@ -17,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
-    private final AuthorServiceImpl authorService;
+    private final AuthorService authorService;
     final private BookRepository bookRepository;
     @Autowired
     final private BookMapper bookMapper;
@@ -55,10 +58,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void addBook(BookDto bookDto) {
-        Book book = bookMapper.mapBookDtoToBook(bookDto);
-        if (authorService.authorExists(bookDto.getAuthor().getId())) {
-            Author author = authorService.getRawAuthor(bookDto.getAuthor().getId());
+    public void addBook(AddBookDto addBookDto) {
+        Book book = bookMapper.mapAddBookDtoToBook(addBookDto);
+        if (authorService.authorExists(addBookDto.getAuthorId())) {
+            Author author = authorService.getRawAuthor(addBookDto.getAuthorId());
             book.setAuthor(author);
         }
 
@@ -66,14 +69,15 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public boolean updateBook(BookDto bookDto) {
-        Book book = bookRepository.findById(bookDto.getId()).orElseThrow(EntityNotFoundException::new);
-        book.setName(bookDto.getName());
-        book.setDescription(bookDto.getDescription());
-        book.setPages(bookDto.getPages());
+    public boolean updateBook(Integer id, UpdateBookDto updateBookDto) {
+        Book book = bookRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        if (authorService.authorExists(bookDto.getAuthor().getId())) {
-            Author author = authorService.getRawAuthor(bookDto.getAuthor().getId());
+        book.setName(updateBookDto.getName());
+        book.setDescription(updateBookDto.getDescription());
+        book.setPages(updateBookDto.getPages());
+
+        if (authorService.authorExists(updateBookDto.getAuthorId())) {
+            Author author = authorService.getRawAuthor(updateBookDto.getAuthorId());
             book.setAuthor(author);
         }
 
@@ -82,7 +86,15 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteBook(Integer bookId) {
+    public boolean deleteBook(Integer bookId) {
+        if (!bookExists(bookId))
+            return false;
+
+        Book book = bookRepository.findById(bookId).orElseThrow(EntityNotFoundException::new);
+        book.setAuthor(null);
+        bookRepository.save(book);
+
         bookRepository.deleteById(bookId);
+        return true;
     }
 }

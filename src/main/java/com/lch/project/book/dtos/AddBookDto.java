@@ -1,6 +1,5 @@
 package com.lch.project.book.dtos;
 
-import com.lch.project.author.dtos.AuthorDto;
 import lombok.*;
 
 @Getter
@@ -8,10 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BookDto {
-    private Integer id;
+public class AddBookDto {
     private String name;
     private String description;
     private Integer pages;
-    private AuthorDto author;
+    private Integer authorId;
 }

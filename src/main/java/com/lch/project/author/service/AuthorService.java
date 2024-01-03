@@ -1,7 +1,7 @@
-package com.lch.project.book.service;
+package com.lch.project.author.service;
 
-import com.lch.project.book.dtos.AuthorDto;
-import com.lch.project.book.model.Author;
+import com.lch.project.author.dtos.AuthorDto;
+import com.lch.project.author.model.Author;
 
 import java.util.List;
 

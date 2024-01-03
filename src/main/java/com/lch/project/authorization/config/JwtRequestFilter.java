@@ -1,6 +1,7 @@
 package com.lch.project.authorization.config;
 
 import com.lch.project.authorization.service.JwtUserDetailsService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,6 +30,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final String requestTokenHeader = request.getHeader("Authorization");
         String username = null;
         String jwtToken = null;
+
 
         // Token JWT ma postać "Bearer token". Należy usunąć słowo
         // Bearer i pobrać tylko właściwy token

@@ -1,6 +1,6 @@
 package com.lch.project.book.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
+import com.lch.project.author.model.Author;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +22,7 @@ public class Book {
     private Integer pages;
 
     @JoinColumn(name = "author_id")
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Author author;
 
 }

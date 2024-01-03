@@ -1,5 +1,6 @@
-package com.lch.project.book.model;
+package com.lch.project.author.model;
 
+import com.lch.project.book.model.Book;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Setter
@@ -22,6 +24,6 @@ public class Author {
     private String firstname;
     private String surname;
 
-    @OneToOne(mappedBy = "author")
-    private Book book;
+    @OneToMany(mappedBy = "author")
+    private List<Book> book;
 }

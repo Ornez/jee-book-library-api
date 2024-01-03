@@ -1,4 +1,4 @@
-package com.lch.project.book.dtos;
+package com.lch.project.author.dtos;
 
 import lombok.*;
 

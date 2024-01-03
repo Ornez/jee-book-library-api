@@ -1,7 +1,9 @@
 package com.lch.project.book.controller;
 
+import com.lch.project.book.dtos.AddBookDto;
 import com.lch.project.book.dtos.BookDto;
-import com.lch.project.book.service.BookServiceImpl;
+import com.lch.project.book.dtos.UpdateBookDto;
+import com.lch.project.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +13,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class BookController {
-    private final BookServiceImpl bookService;
+    private final BookService bookService;
 
-    @GetMapping(value = "/book/{id}")
+    @GetMapping(value = "/books/{id}")
     public BookDto getBook(@PathVariable("id") Integer bookId) {
         return bookService.getBook(bookId);
     }
@@ -23,23 +25,18 @@ public class BookController {
         return bookService.getBooks();
     }
 
-    @PostMapping(value = "/book")
-    public void addBook(@RequestBody BookDto bookDto) {
-        bookService.addBook(bookDto);
+    @PostMapping(value = "/books")
+    public void addBook(@RequestBody AddBookDto addBookDto) {
+        bookService.addBook(addBookDto);
     }
 
-    @PutMapping("/book")
-    public boolean editBook(@RequestBody BookDto bookDto) {
-        return bookService.updateBook(bookDto);
+    @PutMapping("/books/{id}")
+    public boolean editBook(@PathVariable("id") Integer id, @RequestBody UpdateBookDto updateBookDto) {
+        return bookService.updateBook(id, updateBookDto);
     }
 
-    @DeleteMapping("/book/{id}")
-    public boolean deleteBook(@PathVariable("id") Integer bookId) {
-        if (!bookService.bookExists(bookId))
-            return false;
-
-        bookService.deleteBook(bookId);
-        return true;
+    @DeleteMapping("/books/{id}")
+    public boolean deleteBook(@PathVariable("id") Integer id) {
+        return bookService.deleteBook(id);
     }
-
 }

@@ -66,8 +66,27 @@ public class WebSecurityConfig {
         );
 
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/authenticate/**").permitAll()
-                .requestMatchers("/register/**").permitAll()
+                .requestMatchers("/authenticate").permitAll()
+                .requestMatchers("/register").permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/books").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/books").permitAll()
+                .requestMatchers(HttpMethod.GET, "/books/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/books/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/books/**").hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "/authors").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/authors").permitAll()
+                .requestMatchers(HttpMethod.GET, "/authors/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/authors/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/authors/**").hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "/ratings").hasRole("USER")
+                .requestMatchers(HttpMethod.GET, "/ratings").permitAll()
+                .requestMatchers(HttpMethod.GET, "/ratings/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/ratings/**").hasRole("USER")
+                .requestMatchers(HttpMethod.DELETE, "/ratings/**").hasRole("USER")
+
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()).exceptionHandling((exception) -> exception
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint));
