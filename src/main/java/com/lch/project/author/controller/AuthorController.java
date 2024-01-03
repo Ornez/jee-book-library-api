@@ -1,7 +1,14 @@
 package com.lch.project.author.controller;
 
+import com.lch.project.author.dtos.AddAuthorDto;
 import com.lch.project.author.dtos.AuthorDto;
-import com.lch.project.author.service.AuthorServiceImpl;
+import com.lch.project.author.dtos.UpdateAuthorDto;
+import com.lch.project.author.model.Author;
+import com.lch.project.author.service.AuthorService;
+import com.lch.project.book.dtos.UpdateBookDto;
+import com.lch.project.book.model.Book;
+import com.lch.project.book.service.BookService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,34 +18,38 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class AuthorController {
-    private final AuthorServiceImpl authorService;
+    private final AuthorService authorService;
+    private final BookService bookService;
 
-    @GetMapping(value = "/get-author/{id}")
-    public AuthorDto getAuthor(@PathVariable("id") Integer authorId) {
-        return authorService.getAuthor(authorId);
+    @PostMapping(value = "/authors")
+    public void addAuthor(@RequestBody AddAuthorDto addAuthorDto) {
+        authorService.addAuthor(addAuthorDto);
     }
 
-    @GetMapping(value = "/get-authors")
+    @GetMapping(value = "/authors")
     public List<AuthorDto> getAuthors() {
         return authorService.getAuthors();
     }
-
-    @PostMapping(value = "/author")
-    public void addAuthor(@RequestBody AuthorDto authorDto) {
-        authorService.addAuthor(authorDto);
+    @GetMapping(value = "/authors/{id}")
+    public AuthorDto getAuthor(@PathVariable("id") Integer id) {
+        return authorService.getAuthor(id);
     }
 
-    @PutMapping("/author")
-    public boolean editAuthor(@RequestBody AuthorDto authorDto) {
-        return authorService.updateAuthor(authorDto);
+    @PutMapping("/authors/{id}")
+    public boolean editAuthor(@PathVariable("id") Integer id, @RequestBody UpdateAuthorDto updateAuthorDto) {
+        return authorService.updateAuthor(id, updateAuthorDto);
     }
 
-    @DeleteMapping("/author/{id}")
-    public boolean deleteAuthor(@PathVariable("id") Integer authorId) {
-        if (!authorService.authorExists(authorId))
-            return false;
+    @DeleteMapping("/authors/{id}")
+    public boolean deleteAuthor(@PathVariable("id") Integer id) {
+        Author author = authorService.getRawAuthor(id);
 
-        authorService.deleteAuthor(authorId);
-        return true;
+        List<Book> books = bookService.getBooksWithAuthor(author);
+        books.forEach(book -> {
+            UpdateBookDto updateBookDto = new UpdateBookDto(book.getName(), book.getDescription(), book.getPages(), null);
+            bookService.updateBook(book.getId(), updateBookDto);
+        });
+
+        return authorService.deleteAuthor(id);
     }
 }

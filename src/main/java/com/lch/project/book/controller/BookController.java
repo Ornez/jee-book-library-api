@@ -15,9 +15,9 @@ import java.util.List;
 public class BookController {
     private final BookService bookService;
 
-    @GetMapping(value = "/books/{id}")
-    public BookDto getBook(@PathVariable("id") Integer bookId) {
-        return bookService.getBook(bookId);
+    @PostMapping(value = "/books")
+    public void addBook(@RequestBody AddBookDto addBookDto) {
+        bookService.addBook(addBookDto);
     }
 
     @GetMapping(value = "/books")
@@ -25,9 +25,9 @@ public class BookController {
         return bookService.getBooks();
     }
 
-    @PostMapping(value = "/books")
-    public void addBook(@RequestBody AddBookDto addBookDto) {
-        bookService.addBook(addBookDto);
+    @GetMapping(value = "/books/{id}")
+    public BookDto getBook(@PathVariable("id") Integer bookId) {
+        return bookService.getBook(bookId);
     }
 
     @PutMapping("/books/{id}")

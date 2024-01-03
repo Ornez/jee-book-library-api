@@ -1,12 +1,14 @@
 package com.lch.project.author.service;
 
-import com.lch.project.book.converters.BookMapper;
+import com.lch.project.author.dtos.AddAuthorDto;
+import com.lch.project.author.dtos.UpdateAuthorDto;
+import com.lch.project.author.mappers.AuthorMapper;
 import com.lch.project.author.dtos.AuthorDto;
 import com.lch.project.author.model.Author;
 import com.lch.project.author.repository.AuthorRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,57 +18,62 @@ import java.util.stream.Collectors;
 @Service
 public class AuthorServiceImpl implements AuthorService {
     final private AuthorRepository authorRepository;
-    @Autowired
-    final private BookMapper bookMapper;
+    final private AuthorMapper authorMapper;
 
     @Override
-    public boolean authorExists(Integer authorId) {
-        return authorRepository.existsById(authorId);
+    public boolean authorExists(Integer id) {
+        if (id == null)
+            return false;
+
+        return authorRepository.existsById(id);
     }
 
     @Override
-    public AuthorDto getAuthor(Integer AuthorId) {
+    public AuthorDto getAuthor(Integer id) {
         return authorRepository
-                .findById(AuthorId)
-                .map(bookMapper::mapAuthorToAuthorDto).orElseThrow(EntityNotFoundException::new);
+                .findById(id)
+                .map(authorMapper::mapAuthorToAuthorDto).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
-    public Author getRawAuthor(Integer AuthorId) {
+    public Author getRawAuthor(Integer id) {
         return authorRepository
-                .findById(AuthorId).orElseThrow(EntityNotFoundException::new);
+                .findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
     public List<AuthorDto> getAuthors() {
         return authorRepository
                 .findAll().stream()
-                .map(bookMapper::mapAuthorToAuthorDto)
+                .map(authorMapper::mapAuthorToAuthorDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void addAuthor(AuthorDto AuthorDto) {
-        Author Author = bookMapper.mapAuthorDtoToAuthor(AuthorDto);
+    public void addAuthor(AddAuthorDto addAuthorDto) {
+        Author Author = authorMapper.mapAddAuthorDtoToAuthor(addAuthorDto);
         authorRepository.save(Author);
     }
 
     @Override
-    public boolean updateAuthor(AuthorDto AuthorDto) {
-        if (!authorExists(AuthorDto.getId()))
+    public boolean updateAuthor(Integer id, UpdateAuthorDto updateAuthorDto) {
+        if (!authorExists(id))
             return false;
 
-        Author Author = authorRepository.findById(AuthorDto.getId()).orElseThrow(EntityNotFoundException::new);
-        Author.setFirstname(AuthorDto.getFirstname());
-        Author.setSurname(AuthorDto.getSurname());
+        Author Author = authorRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Author.setFirstname(updateAuthorDto.getFirstname());
+        Author.setSurname(updateAuthorDto.getSurname());
 
         authorRepository.save(Author);
         return true;
     }
 
     @Override
-    public void deleteAuthor(Integer AuthorId) {
-        authorRepository.deleteById(AuthorId);
-    }
+    public boolean deleteAuthor(Integer id) {
+        if (!authorExists(id))
+            return false;
 
+        authorRepository.deleteById(id);
+        return true;
+    }
 }

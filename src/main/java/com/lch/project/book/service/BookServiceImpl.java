@@ -12,6 +12,7 @@ import com.lch.project.book.repository.BookRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,13 +21,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
-    private final AuthorService authorService;
-    final private BookRepository bookRepository;
+    @Lazy
     @Autowired
-    final private BookMapper bookMapper;
+    private final AuthorService authorService;
+    private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     @Override
     public boolean bookExists(Integer bookId) {
+        if (bookId == null)
+            return false;
+
         return bookRepository.existsById(bookId);
     }
 
@@ -58,6 +63,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public List<Book> getBooksWithAuthor(Author author) {
+        return bookRepository.findAllByAuthor(author);
+    }
+
+    @Override
     public void addBook(AddBookDto addBookDto) {
         Book book = bookMapper.mapAddBookDtoToBook(addBookDto);
         if (authorService.authorExists(addBookDto.getAuthorId())) {
@@ -76,7 +86,10 @@ public class BookServiceImpl implements BookService {
         book.setDescription(updateBookDto.getDescription());
         book.setPages(updateBookDto.getPages());
 
-        if (authorService.authorExists(updateBookDto.getAuthorId())) {
+        if (updateBookDto.getAuthorId() == null) {
+            book.setAuthor(null);
+        }
+        else if (authorService.authorExists(updateBookDto.getAuthorId())) {
             Author author = authorService.getRawAuthor(updateBookDto.getAuthorId());
             book.setAuthor(author);
         }
