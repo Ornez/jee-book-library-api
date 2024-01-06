@@ -1,5 +1,6 @@
 package com.lch.project.authorization.service;
 
+import com.lch.project.authorization.model.AddUserDto;
 import com.lch.project.authorization.model.UserDao;
 import com.lch.project.authorization.model.UserDto;
 import com.lch.project.authorization.repository.UserRepository;
@@ -42,9 +43,9 @@ public class JwtUserDetailsService implements UserDetailsService {
         return new User(user.getUsername(), user.getPassword(), authorities);
     }
 
-    public UserDetails save(UserDto userDto) {
-        String username = userDto.getUsername();
-        String password = userDto.getPassword();
+    public UserDetails save(AddUserDto addUserDto) {
+        String username = addUserDto.getUsername();
+        String password = addUserDto.getPassword();
 
         // Check if the username already exists
         if (userRepository.findByUsername(username) != null) {

@@ -21,14 +21,12 @@ import java.util.List;
 @Service
 public class RatingServiceImpl implements RatingService {
     private final RatingRepository ratingRepository;
-
-    @Lazy
     @Autowired
-    private final BookService bookService;
-
     @Lazy
+    private BookService bookService;
     @Autowired
-    private final UserService userService;
+    @Lazy
+    private UserService userService;
 
     @Override
     public void addRating(AddRatingDto addRatingDto) {

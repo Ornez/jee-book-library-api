@@ -4,13 +4,17 @@ import com.lch.project.authorization.config.JwtTokenUtil;
 import com.lch.project.authorization.model.UserDao;
 import com.lch.project.authorization.model.UserDto;
 import com.lch.project.authorization.repository.UserRepository;
+import com.lch.project.authorization.utils.AuthUtils;
+import com.lch.project.rating.utils.RatingUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.ExtensionMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@ExtensionMethod({AuthUtils.class})
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
@@ -34,7 +38,6 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
-        UserDto userDto = new UserDto((int) user.getId(), user.getUsername(),user.getPassword());
-        return userDto;
+        return user.asDto();
     }
 }

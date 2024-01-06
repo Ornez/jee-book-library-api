@@ -8,7 +8,6 @@ import com.lch.project.author.service.AuthorService;
 import com.lch.project.book.dtos.UpdateBookDto;
 import com.lch.project.book.model.Book;
 import com.lch.project.book.service.BookService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

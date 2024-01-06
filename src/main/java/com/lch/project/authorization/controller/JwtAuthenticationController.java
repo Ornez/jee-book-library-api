@@ -1,6 +1,7 @@
 package com.lch.project.authorization.controller;
 
 import com.lch.project.authorization.config.JwtTokenUtil;
+import com.lch.project.authorization.model.AddUserDto;
 import com.lch.project.authorization.model.JwtRequest;
 import com.lch.project.authorization.model.JwtResponse;
 import com.lch.project.authorization.model.UserDto;
@@ -38,9 +39,9 @@ public class JwtAuthenticationController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ResponseEntity<?> saveUser(@RequestBody UserDto user)
+    public ResponseEntity<?> saveUser(@RequestBody AddUserDto addUserDto)
             throws Exception {
-        return ResponseEntity.ok(userDetailsService.save(user));
+        return ResponseEntity.ok(userDetailsService.save(addUserDto));
     }
 
     private void authenticate(String username, String password)

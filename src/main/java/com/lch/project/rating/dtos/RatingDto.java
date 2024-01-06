@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 public class RatingDto {
     private Integer id;
-    private BookDto bookDto;
-    private UserDto userDto;
+    private BookDto book;
+    private UserDto user;
     private Integer rating;
 }

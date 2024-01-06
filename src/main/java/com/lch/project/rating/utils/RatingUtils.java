@@ -6,13 +6,15 @@ import com.lch.project.rating.dtos.RatingDto;
 import com.lch.project.rating.model.UserRating;
 import lombok.experimental.ExtensionMethod;
 
+import java.util.List;
+
 @ExtensionMethod({BookUtils.class, AuthUtils.class})
 public class RatingUtils {
-    public static RatingDto asDto(UserRating userRating) {
+    public static RatingDto asDto(UserRating userRating, List<UserRating> bookUserRatings) {
         return RatingDto.builder()
                 .id(userRating.getId())
-                .bookDto(userRating.getBook().asDto())
-                .userDto(userRating.getUser().asDto())
+                .book(userRating.getBook().asDto(bookUserRatings))
+                .user(userRating.getUser().asDto())
                 .rating(userRating.getRating())
                 .build();
     }

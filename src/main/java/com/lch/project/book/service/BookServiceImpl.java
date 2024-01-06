@@ -1,7 +1,6 @@
 package com.lch.project.book.service;
 
 import com.lch.project.author.service.AuthorService;
-import com.lch.project.author.dtos.AuthorDto;
 import com.lch.project.book.dtos.AddBookDto;
 import com.lch.project.book.dtos.BookDto;
 import com.lch.project.author.model.Author;
@@ -9,21 +8,31 @@ import com.lch.project.book.dtos.UpdateBookDto;
 import com.lch.project.book.model.Book;
 import com.lch.project.book.converters.BookMapper;
 import com.lch.project.book.repository.BookRepository;
+import com.lch.project.book.utils.BookUtils;
+import com.lch.project.rating.dtos.FilterRatingDto;
+import com.lch.project.rating.model.UserRating;
+import com.lch.project.rating.service.RatingService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.ExtensionMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@ExtensionMethod({BookUtils.class})
 public class BookServiceImpl implements BookService {
-    @Lazy
     @Autowired
-    private final AuthorService authorService;
+    @Lazy
+    private AuthorService authorService;
+    @Autowired
+    @Lazy
+    private RatingService ratingService;
+
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
 
@@ -48,23 +57,27 @@ public class BookServiceImpl implements BookService {
 
         Book book = bookRepository.findById(bookId).orElseThrow(EntityNotFoundException::new);
 
-        Author author = book.getAuthor();
-        AuthorDto authorDto = new AuthorDto();
-        if (author != null) {
-            authorDto = bookMapper.mapAuthorToAuthorDto(author);
-        }
+        FilterRatingDto filterByBook = new FilterRatingDto();
+        filterByBook.setBookId(book.getId());
+        List<UserRating> userRatings = ratingService.findAll(filterByBook);
 
-        BookDto bookDto =  bookMapper.mapBookToBookDto(book);
-        bookDto.setAuthor(authorDto);
-        return bookDto;
+        return book.asDto(userRatings);
     }
 
     @Override
     public List<BookDto> getBooks() {
-        return bookRepository
-                .findAll().stream()
-                .map(bookMapper::mapBookToBookDto)
-                .collect(Collectors.toList());
+        List<Book> books = bookRepository.findAll();
+        List<BookDto> bookDtos = new ArrayList<>();
+
+        FilterRatingDto filterByBook = new FilterRatingDto();
+
+        for (Book book : books) {
+            filterByBook.setBookId(book.getId());
+            List<UserRating> userRatings = ratingService.findAll(filterByBook);
+            bookDtos.add(book.asDto(userRatings));
+        }
+
+        return bookDtos;
     }
 
     @Override

@@ -4,14 +4,15 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+
+import static java.util.Map.entry;
 
 @Component
 public class JwtTokenUtil implements Serializable {
@@ -55,12 +56,17 @@ public class JwtTokenUtil implements Serializable {
     }
 
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+        ArrayList<String> authsList = new ArrayList<>(authorities.size());
+        for (GrantedAuthority authority : authorities) {
+            authsList.add(authority.getAuthority());
+        }
+        return doGenerateToken(authsList, userDetails.getUsername());
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims)
+    private String doGenerateToken(ArrayList<String> authsList, String subject) {
+        return Jwts.builder()
+                .claim("ROLES", authsList)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))

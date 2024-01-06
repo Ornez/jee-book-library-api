@@ -15,4 +15,6 @@ public class BookDto {
     private String description;
     private Integer pages;
     private AuthorDto author;
+    private Double averageRating;
+    private Integer numberOfVotes;
 }

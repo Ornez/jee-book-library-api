@@ -37,7 +37,10 @@ public class RatingController {
         List<UserRating> userRatings = ratingService.findAll(filterRatingDto);
         List<RatingDto> ratingDtos = new LinkedList<>();
         userRatings.forEach(userRating -> {
-            ratingDtos.add(userRating.asDto());
+            FilterRatingDto filterByBook = new FilterRatingDto();
+            filterByBook.setBookId(userRating.getBook().getId());
+            var ratingRelatedWithBook = ratingService.findAll(filterByBook);
+            ratingDtos.add(userRating.asDto(ratingRelatedWithBook));
         });
         return ratingDtos;
     }
